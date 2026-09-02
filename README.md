@@ -1,0 +1,2 @@
+# Predicting-Successful-Export-Entry-A-Machine-Learning-Approach-with-Portuguese-Firms
+Replication code for “Distance to Export: Predicting Successful Export Entry among Portuguese Firms.” The repository contains the Python pipeline used to construct the export-entry sample, estimate machine-learning models, evaluate targeting performance, and generate the paper’s tables and figures. Confidential firm-level data are not included.
