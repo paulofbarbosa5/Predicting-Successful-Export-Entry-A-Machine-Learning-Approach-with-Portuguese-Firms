@@ -1,0 +1,14 @@
+data/raw/
+data/interim/
+data/processed/
+outputs/predictions/
+outputs/tables/
+outputs/figures/
+outputs/logs/
+*.RData
+*.rds
+*.parquet
+*.csv
+.venv/
+__pycache__/
+!**/.gitkeep
