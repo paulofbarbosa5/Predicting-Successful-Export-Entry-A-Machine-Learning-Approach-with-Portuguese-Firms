@@ -1,129 +1,71 @@
-# Distance to Export — Python revision (Stage 1: diagnostics)
+# Predicting Successful Export Entry: A Machine Learning Approach with Portuguese Firms
 
-These four scripts replace `data_creationV2.R` and the data-prep half of
-`predictions.R`. They do **not** train models. Their job is to make every
-downstream design decision (outcome, horizon, size cells, split) for you,
-from the data, with the leakage and definition fixes already applied.
+Replication code for Barbosa, P. H., Amador, J. and Cortes, J. (2026), *Predicting Successful Export Entry: A Machine Learning Approach with Portuguese Firms*.
 
-> Do not write or run model code until script 04 has produced its counts.
+The code builds a forward-looking firm-year panel of Portuguese manufacturing firms, defines the export-entry outcomes, creates the validation splits, estimates and evaluates the models, and writes the tables and figures reported in the paper.
 
-## What was fixed relative to the old R pipeline
-- **Leakage**: the old feature matrix kept `Total_Vendas` and `MercadoInterno_Vendas`,
-  and the label was `1[(Total_Vendas − MercadoInterno_Vendas)/Total_Vendas ≥ 0.10]`.
-  Script 02 measures this directly. These columns are kept here only to *build*
-  outcomes/productivity and are never exposed as features.
-- **Forward-looking design**: the outcome is future export entry among current
-  non-exporters, so no contemporaneous sales variable can reconstruct the label.
-- **Definitions matched to the paper**: productivity = `VAB / employment`
-  (`VAB = Total_Vendas − CustoMercadoriasMateriasConsumidas_Total`),
-  EU import share = `(EU Compras + EU Fornecimentos)/Total_Compras`,
-  `capital_intensity = TotalActivo / employment` (not assets/sales),
-  sector = 2-digit `Divisao` from `CAE.x`, manufacturing only.
-- **Two outcome families, named differently**:
-  - *true export entry* — candidate has zero exports at t (`entry_from_zero_*`);
-  - *successful-export transition* — candidate is below 10% at t (`transition_below10_*`).
+## Data availability
 
-## Setup (Windows / VS Code)
+The analysis uses confidential firm-level data from *Informação Empresarial Simplificada* (IES) for 2010–2021. The microdata cannot be redistributed. This repository contains only source code, configuration templates, dependency specifications and execution instructions. It contains no raw or processed microdata, firm identifiers, firm-level predictions or fitted models derived from confidential data.
+
+The analysis was conducted outside the Banco de Portugal Microdata Research Laboratory (BPLIM). Authorised researchers may reconstruct the workflow with a comparable Central Balance Sheet/IES extract from BPLIM, subject to project approval and the applicable confidentiality and output-control procedures. If an IES item required here is not in the standard extract, it can be requested through BPLIM by identifying the corresponding IES table and item. See Appendix D of the paper and the [BPLIM access page](https://bplim.bportugal.pt/content/access-0).
+
+## Requirements
+
+- Python 3.13.6
+- The packages in `requirements.txt`, including scikit-learn 1.8.0 and shap 0.52.0
+
 ```powershell
-cd C:\Research\distance-to-export-python
 python -m venv .venv
-.\.venv\Scripts\activate
+.\.venv\Scripts\activate          # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 ```
-Put `iesCompleto.RData` in `data\raw\`. Confirm the names in `config\config.yaml`
-match what script 01 reports (fix there if your raw file differs).
+
+## Configuration
+
+Place the raw IES extract in `data/raw/` and adapt `config/config.yaml` to the variable names in your extract. The original analysis used an R data file (`iesCompleto.RData`). Script 01 lists the columns found in the raw file, so the mapping can be checked before the panel is built. The `data/` and `outputs/` folders are local and are not part of this repository.
+
+## Design
+
+- **Candidates.** Manufacturing firm-years with zero foreign goods sales in year *t* and an observed outcome in *t*+1.
+- **Headline outcome** (`entry_from_zero_to_success_t1`). Foreign goods sales reach at least 10% of total goods sales in *t*+1. Outcome columns come in two families: `entry_from_zero_*` for candidates with zero exports at *t*, and `transition_below10_*` for candidates below 10% export intensity at *t*.
+- **Predictors.** Measured at *t* (feature set `main_t`). The panel also stores one-year lags (`L1_*`), which the paper does not use. Size classes are employment-based (micro < 10, small 10–49, medium 50–249, large ≥ 250 employees). Sector is the two-digit NACE Rev.2 division.
+- **No sales decomposition in the features.** The contemporaneous exporter label used in an earlier version of the paper is exactly reconstructable from total and domestic sales (script 02; Table A.5 of the paper). Total and domestic sales are therefore used only to build the outcomes and derived ratios such as value-added productivity, and never enter the feature matrix directly.
+- **Validation.** Main chronological split: training on candidate years 2010–2017, validation on 2018, test on 2019–2020 (outcomes observed in 2020–2021). Hyperparameters are selected by PR-AUC on the validation window, and the selected specification is refitted on training plus validation. A single random seed (123) governs the splits, model fitting and the firm-clustered bootstrap.
 
 ## Run order
-```powershell
-python scripts/01_schema_check.py            # columns, year counts (2018 jump), missingness
-python scripts/02_leakage_identity_check.py  # is the old label reconstructable? (expect yes)
-python scripts/03_build_entry_panel.py       # -> data/processed/entry_panel.parquet
-python scripts/04_design_diagnostics.py      # the gatekeeper: counts + recommendation
-```
 
-## What to read before going further
-- `outputs/tables/leakage_identity_check.csv` — confirms the old AUCs were inflated.
-- `outputs/tables/design_recommendation.csv` — which outcome/horizon is `headline candidate`
-  vs `too sparse`, and the event counts **by size class** in the test window.
-- `outputs/tables/pre_post_2018_composition.csv` — does 2018 change the size/exporter mix?
-  If post-2018 is much more micro-heavy, the time split mixes a coverage change with the
-  size-heterogeneity story; add the post-2018 robustness split.
-
-Then write down, before touching models:
-```
-selected_outcome   = ...
-selected_horizon   = ...
-selected_size_cells = ...
-selected_split     = ...   # and whether a post-2018 robustness split is needed
-```
-
-## One design choice the panel leaves open (deliberately)
-The panel stores each predictor twice: contemporaneous at t (e.g. `labor_productivity_vab`)
-and lagged one year (`L1_labor_productivity_vab`). The conservative design models on the
-`L1_*` set (predictors strictly before the candidate year), which is safest but needs the
-firm observed at t−1 and so costs sample. The standard forward design uses the at-t features
-(predictors in the candidate year, outcome in the future). Decide after seeing how much
-sample the `L1_` requirement removes — script 04's candidate counts use the outcome only,
-so they are unaffected; the cost shows up later as missing `L1_` rows.
-
-## Caveats
-- I could not run these on the real confidential panel; treat the first run as a debugging
-  pass and read the console output.
-- Size classes here are employment-only bands, not the EU turnover+employment definition the
-  paper used, so size counts won't match Table 1/A.3 exactly. Switch in `03` if you want exact
-  comparability.
-- Monetary levels are nominal. You have `CPI_2010-2021.xlsx`; decide whether to deflate the
-  level features (ratios like ROA and import shares are scale-free and unaffected).
-
-## Stage 2: modeling and referee-response tables
-
-After scripts 01--04, the recommended baseline from your real diagnostics is:
-
-```text
-selected_outcome = entry_from_zero_to_success_t1
-selected_horizon = 1
-main test candidate years = 2019, 2020
-main split = time split (firm_grouped_time is reported as a model-performance robustness check only)
-main size cells = micro, small, medium+large
-```
-
-Before final modeling, rerun the patched scripts:
+The commands below reproduce the main results for the chronological split.
 
 ```powershell
-python scripts/01b_duplicate_diagnostics.py
-python scripts/03_build_entry_panel.py
-python scripts/04_design_diagnostics.py
-```
-
-Then run Stage 2:
-
-```powershell
+python scripts/01_schema_check.py                # raw-extract columns, year counts, missingness
+python scripts/01b_duplicate_diagnostics.py      # duplicate firm-year records
+python scripts/02_leakage_identity_check.py      # sales identity check (Table A.5)
+python scripts/03_build_entry_panel.py           # -> data/processed/entry_panel.parquet
+python scripts/04_design_diagnostics.py          # event counts by outcome, horizon and size class
 python scripts/05_make_splits.py --outcome entry_from_zero_to_success_t1 --include-robustness-splits
 python scripts/06_run_policy_baselines.py --outcome entry_from_zero_to_success_t1 --split-designs time
-python scripts/07_run_main_models.py --outcome entry_from_zero_to_success_t1 --feature-set main_t --split-designs time --quick
-python scripts/08_evaluate_and_bootstrap.py --outcome entry_from_zero_to_success_t1 --feature-set main_t --bootstrap 300
+python scripts/07_run_main_models.py --outcome entry_from_zero_to_success_t1 --feature-set main_t --split-designs time
+python scripts/08_evaluate_and_bootstrap.py --outcome entry_from_zero_to_success_t1 --feature-set main_t --bootstrap 1000
 python scripts/09_size_and_mr_comparison.py --outcome entry_from_zero_to_success_t1 --feature-set main_t --split-design time
 python scripts/10_interactions.py --outcome entry_from_zero_to_success_t1 --feature-set main_t --split-design time --model gradient_boosting
 ```
 
-Remove `--quick` once the pipeline runs cleanly.
+## Main outputs
 
-For conservative robustness:
+Tables are written to `outputs/tables/`.
 
-```powershell
-python scripts/07_run_main_models.py --outcome entry_from_zero_to_success_t1 --feature-set main_l1 --split-designs time --quick
-python scripts/08_evaluate_and_bootstrap.py --outcome entry_from_zero_to_success_t1 --feature-set all --bootstrap 300
-```
+| Output file | Paper exhibit |
+|---|---|
+| `leakage_identity_check.csv` | Table A.5 |
+| `split_diagnostics_entry_from_zero_to_success_t1.csv` | Table A.1 |
+| `main_model_metrics_entry_from_zero_to_success_t1_main_t.csv` | Table 3 |
+| `model_performance_with_ci_entry_from_zero_to_success_t1.csv` | Table A.2 |
+| `policy_baseline_targeting_entry_from_zero_to_success_t1.csv` | Table 8 (simple targeting rules) |
+| `size_group_retrained_performance_entry_from_zero_to_success_t1.csv` | Tables 7 and A.3 |
+| `permutation_importance_entry_from_zero_to_success_t1_main_t.csv` | Table B.1 |
+| `interaction_strength_entry_from_zero_to_success_t1_main_t.csv` | Table B.2 |
 
-The main outputs for the paper are:
+## Contact
 
-```text
-outputs/tables/split_diagnostics_entry_from_zero_to_success_t1.csv
-outputs/tables/policy_baseline_targeting_entry_from_zero_to_success_t1.csv
-outputs/tables/main_model_metrics_entry_from_zero_to_success_t1_main_t.csv
-outputs/tables/model_performance_with_ci_entry_from_zero_to_success_t1.csv
-outputs/tables/size_group_prediction_performance_entry_from_zero_to_success_t1.csv
-outputs/tables/size_group_retrained_performance_entry_from_zero_to_success_t1.csv
-outputs/tables/permutation_importance_entry_from_zero_to_success_t1_main_t.csv
-outputs/tables/interaction_strength_entry_from_zero_to_success_t1_main_t.csv
-```
+Paulo Henrique Barbosa (paulofbarbosa5@gmail.com)
