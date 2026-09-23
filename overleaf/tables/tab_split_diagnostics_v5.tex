@@ -1,0 +1,17 @@
+\begin{table}[!ht]
+\captionof{table}{Validation split diagnostics} \label{tab:split_diagnostics_v2}
+\centering
+\begin{tabular}{lrrrrrr}
+\hline
+Split & Train events & Validation events & Test events & Test entry rate (\%) & Firm overlap & Year overlap \\
+\hline
+Random firm-year split & 2,428 & 347 & 694 & 4.2 & 9,868 & 11 \\
+Firm-grouped split & 2,432 & 352 & 685 & 4.2 & 0 & 11 \\
+Time split & 2,108 & 507 & 854 & 2.6 & 5,764 & 0 \\
+Firm-grouped + time split & 1,471 & 51 & 161 & 2.5 & 0 & 0 \\
+Pre-COVID split & 1,843 & 265 & 507 & 3.2 & 4,372 & 0 \\
+Post-2018 split & 507 & 540 & 314 & 2.5 & 7,225 & 0 \\
+\hline
+\end{tabular}
+\note{Note: The strict firm-grouped plus time split has no overlap in firms or candidate years between training and test sets. The post-2018 split evaluates the model within the expanded post-2018 coverage period.}
+\end{table}

@@ -1,0 +1,22 @@
+\begin{table}[!ht]
+\captionof{table}{Strongest SHAP interaction pairs (winsorized productivity)} \label{tab:shap_interactions}
+\centering
+\begin{tabular}{llr}
+\hline
+ & & \\
+Feature 1 & Feature 2 & Mean $|$SHAP interaction$|$ \\
+\hline
+Capital intensity & Labour productivity (VAB) & 0.0180 \\
+Equity ratio & Assets (log) & 0.0095 \\
+Sector (NACE division) & Equity ratio & 0.0088 \\
+Assets (log) & Wage per worker & 0.0084 \\
+Assets (log) & Profit margin & 0.0075 \\
+EU import intensity & Labour productivity (VAB) & 0.0072 \\
+Capital intensity & Sector (NACE division) & 0.0064 \\
+Import experience & Assets (log) & 0.0060 \\
+Import experience & EU import intensity & 0.0048 \\
+Sector (NACE division) & Profit margin & 0.0047 \\
+\hline
+\end{tabular}
+\note{Note: Mean absolute SHAP interaction values (log-odds scale) for the gradient-boosting model, top ten pairs, computed on a sample of the test set with TreeExplainer after winsorising productivity. The strongest interaction involving productivity is with capital intensity; the productivity--import-experience interaction is comparatively small. Values rank the strength of pairwise interactions and are not causal effects.}
+\end{table}

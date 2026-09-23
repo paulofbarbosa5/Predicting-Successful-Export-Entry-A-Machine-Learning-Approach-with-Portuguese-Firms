@@ -1,0 +1,21 @@
+\begin{table}[!ht]
+\captionof{table}{Random Forest SHAP importance} \label{tab:rf_shap_importance}
+\centering
+\begin{tabular}{lr}
+\hline
+Feature & Mean $|$SHAP$|$ \\
+\hline
+Sector (NACE division) & 0.0825 \\
+Equity ratio & 0.0349 \\
+Assets (log) & 0.0344 \\
+Capital intensity & 0.0315 \\
+Labour productivity (VAB) & 0.0271 \\
+Profit margin & 0.0252 \\
+Wage per worker & 0.0222 \\
+Import experience & 0.0222 \\
+Return on assets & 0.0208 \\
+EU import intensity & 0.0174 \\
+\hline
+\end{tabular}
+\note{Note: Mean absolute SHAP values for the Random Forest model in the main time split. The exercise is included as a robustness check because the Random Forest attains the highest lift in the main chronological split, while the main-text SHAP interpretation uses Gradient Boosting as the representative tree-based model. SHAP values are predictive contributions to the model score and are not causal effects.}
+\end{table}

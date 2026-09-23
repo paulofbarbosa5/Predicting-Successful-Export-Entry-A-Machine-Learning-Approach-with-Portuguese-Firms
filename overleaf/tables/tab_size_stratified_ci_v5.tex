@@ -1,0 +1,23 @@
+\begin{table}[!htbp]
+\captionof{table}{Export-entry prediction by firm-size class} \label{tab:size_ci}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.10}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrcccc}
+\hline
+Sample & Cand. FY & Entr. & Rate (\%) & ROC-AUC & PR-AUC & P@10 (\%) & Lift@10 \\
+\hline
+All firms & 32,749 & 853 & 2.6 & 0.680 [0.663, 0.696] & 0.050 [0.045, 0.057] & 5.5 [4.8, 6.3] & 2.12 [1.87, 2.39] \\
+Micro + small & 32,176 & 816 & 2.5 & 0.673 [0.656, 0.691] & 0.048 [0.042, 0.056] & 5.2 [4.5, 6.0] & 2.05 [1.79, 2.33] \\
+Medium + large & 573 & 37 & 6.5 & 0.667 [0.578, 0.760] & 0.120 [0.078, 0.204] & 19.0 [8.6, 28.8] & 2.94 [1.41, 4.22] \\
+Micro & 26,155 & 615 & 2.4 & 0.680 [0.660, 0.699] & 0.046 [0.040, 0.054] & 4.8 [4.0, 5.6] & 2.03 [1.75, 2.35] \\
+Small & 6,021 & 201 & 3.3 & 0.742 [0.709, 0.774] & 0.081 [0.066, 0.107] & 9.5 [7.2, 11.7] & 2.83 [2.25, 3.47] \\
+Medium & 554 & 35 & 6.3 & 0.648 [0.550, 0.748] & 0.121 [0.072, 0.230] & 12.5 [5.4, 23.2] & 1.98 [0.92, 3.48] \\
+Large & 19 & 2 & 10.5 & -- & -- & -- & \textit{too few events} \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\note{Note: Models are re-estimated within each size class on the main chronological split using Gradient Boosting. Brackets are 95\% firm-clustered bootstrap confidence intervals based on 1,000 resamples of firms. Cand. FY = candidate firm-years; Entr. = future successful entrants; Rate = baseline entry rate. The all-firms row has 853 size-classified entrants; the main test sample contains 854 entrants because one entrant has missing size class. Large firms have only 19 candidate firm-years and two future entries in the test window and are not estimated separately.}
+\end{table}

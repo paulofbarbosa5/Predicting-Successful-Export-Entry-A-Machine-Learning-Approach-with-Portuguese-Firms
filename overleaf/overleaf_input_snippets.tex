@@ -1,0 +1,58 @@
+% Copy this block into the Results section after uploading the files in overleaf/tables and overleaf/figures.
+
+% Tables
+\input{tables/tab_entry_outcomes_v5.tex}
+\input{tables/tab_pre_post_2018_v5.tex}
+\input{tables/tab_model_performance_v5.tex}
+\input{tables/tab_policy_baselines_v5.tex}
+\input{tables/tab_size_stratified_ci_v5.tex}
+\input{tables/tab_permutation_importance_v2.tex}
+\input{tables/tab_interaction_strength_v2.tex}
+\input{tables/tab_no_sales_robustness_v5.tex}
+\input{tables/tab_split_diagnostics_v5.tex}
+
+% Figures
+\begin{figure}[!ht]
+\caption{Observed entry rate by predicted-score decile} \label{fig:score_deciles_rf}
+\centering
+\includegraphics[width=12cm]{figures/fig_score_decile_random_forest_time}
+\note{Note: The figure reports observed successful export-entry rates by decile of the Random Forest score in the main chronological test split.}
+\end{figure}
+
+\begin{figure}[!ht]
+\caption{Targeting lift relative to simple policy rules} \label{fig:policy_lift}
+\centering
+\includegraphics[width=12cm]{figures/fig_policy_lift_time}
+\note{Note: The figure compares lift at the top 5\% and 10\% of the score distribution for simple rankings, policy-logit rules and model scores.}
+\end{figure}
+
+\begin{figure}[!ht]
+\caption{Distribution of export-readiness scores by firm size} \label{fig:score_distribution_size}
+\centering
+\includegraphics[width=12cm]{figures/fig_score_distribution_by_size}
+\note{Note: The figure shows the distribution of predicted export-readiness scores across firm-size classes.}
+\end{figure}
+
+\begin{figure}[!ht]
+\caption{Top-decile lift by firm-size group} \label{fig:size_lift}
+\centering
+\includegraphics[width=12cm]{figures/fig_size_lift_at_10}
+\note{Note: The figure reports lift at the top decile for models re-estimated within size groups.}
+\end{figure}
+
+\begin{figure}[!ht]
+\caption{Predictive signals in the export-readiness score} \label{fig:perm_importance}
+\centering
+\includegraphics[width=12cm]{figures/fig_permutation_importance}
+\note{Note: Permutation importance is computed on the test set using PR-AUC as the scoring metric. The estimates are predictive rankings, not causal effects.}
+\end{figure}
+
+\begin{figure}[!ht]
+\caption{Candidate interaction pairs in export readiness} \label{fig:interaction_strength}
+\centering
+\includegraphics[width=12cm]{figures/fig_interaction_strength}
+\note{Note: The figure ranks candidate interaction pairs used to select the partial-dependence or ALE plots in the main text and appendix.}
+\end{figure}
+
+% EC-style size-definition robustness (Appendix A): entrant composition + fixed-model regrouped lift
+\input{tables/tab_ec_size_comparison_v1.tex}

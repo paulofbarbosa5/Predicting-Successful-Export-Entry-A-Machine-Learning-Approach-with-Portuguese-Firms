@@ -1,0 +1,26 @@
+\begin{table}[!htbp]
+\captionof{table}{Targeting performance relative to simple policy rules} \label{tab:policy_baselines_v2}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrrr}
+\hline
+Rule / model & P@5 (\%) & Lift@5 & Entrants@5 & P@10 (\%) & Lift@10 & Entrants@10 \\
+\hline
+Random targeting & 2.3 & 0.87 & 37 & 2.3 & 0.89 & 76 \\
+Productivity ranking & 5.1 & 1.97 & 84 & 4.5 & 1.72 & 147 \\
+Employment ranking & 5.1 & 1.94 & 83 & 4.3 & 1.66 & 142 \\
+Assets ranking & 6.2 & 2.36 & 101 & 5.7 & 2.19 & 187 \\
+Import-experience ranking & 3.0 & 1.15 & 49 & 3.1 & 1.18 & 101 \\
+EU import-share ranking & 4.4 & 1.69 & 72 & 4.1 & 1.58 & 135 \\
+Logit: productivity, size, sector, imports & 5.2 & 1.99 & 85 & 5.0 & 1.91 & 163 \\
+Logit: productivity, size, sector, imports, finance & 5.4 & 2.08 & 89 & 5.0 & 1.91 & 163 \\
+Logit & 6.0 & 2.29 & 98 & 5.6 & 2.14 & 183 \\
+Gradient Boosting & 6.5 & 2.51 & 107 & 5.5 & 2.11 & 180 \\
+Random Forest & 8.6 & 3.30 & 141 & 6.9 & 2.66 & 227 \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\note{Note: The table uses the main chronological split. The policy interpretation is that an agency targets the top 5\% or 10\% of candidate firms according to each rule or model score. Baseline = average entry rate in the test sample; lift is precision divided by this baseline. The random-targeting row is one realized draw; its expected lift is 1.00.}
+\end{table}

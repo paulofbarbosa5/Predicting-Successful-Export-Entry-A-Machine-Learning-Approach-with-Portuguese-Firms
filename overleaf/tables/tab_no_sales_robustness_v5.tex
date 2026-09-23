@@ -1,0 +1,24 @@
+\begin{table}[!htbp]
+\captionof{table}{Robustness excluding sales-derived predictors} \label{tab:no_sales_robustness_v2}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llrrrr}
+\hline
+Split & Model & ROC-AUC & PR-AUC & P@10 (\%) & Lift@10 \\
+\hline
+Time split & Gradient Boosting & 0.679 & 0.050 & 5.8 & 2.24 \\
+Time split & Logit & 0.656 & 0.047 & 5.6 & 2.13 \\
+Time split & Random Forest & 0.714 & 0.059 & 7.0 & 2.67 \\
+Firm-grouped + time split & Gradient Boosting & 0.686 & 0.049 & 5.1 & 2.05 \\
+Firm-grouped + time split & Logit & 0.655 & 0.042 & 4.3 & 1.74 \\
+Firm-grouped + time split & Random Forest & 0.687 & 0.046 & 5.1 & 2.05 \\
+Post-2018 split & Gradient Boosting & 0.701 & 0.056 & 6.6 & 2.64 \\
+Post-2018 split & Logit & 0.677 & 0.051 & 5.8 & 2.32 \\
+Post-2018 split & Random Forest & 0.687 & 0.054 & 6.5 & 2.61 \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\note{Note: This specification excludes predictors derived from total sales, including VAB labour productivity and profit margin. It addresses the concern that sales-decomposition variables may mechanically contain export information.}
+\end{table}

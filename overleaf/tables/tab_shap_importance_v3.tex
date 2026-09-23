@@ -1,0 +1,24 @@
+\begin{table}[!ht]
+\captionof{table}{SHAP importance of predictive signals (winsorized productivity)} \label{tab:shap_importance}
+\centering
+\begin{tabular}{lrl}
+\hline
+ & & \\
+Feature & Mean $|$SHAP$|$ & Economic channel \\
+\hline
+Sector (NACE division) & 0.2121 & Sector \\
+Assets (log) & 0.1120 & Scale \\
+Equity ratio & 0.0933 & Financial capacity \\
+Labour productivity (VAB) & 0.0661 & Productivity \\
+Capital intensity & 0.0517 & Capital intensity \\
+Profit margin & 0.0445 & Profitability \\
+Wage per worker & 0.0360 & Labour quality \\
+EU import intensity & 0.0293 & International sourcing \\
+Extra-EU import intensity & 0.0278 & International sourcing \\
+Import experience & 0.0221 & International sourcing \\
+Return on assets & 0.0219 & Profitability \\
+Employment (log) & 0.0030 & Scale \\
+\hline
+\end{tabular}
+\note{Note: Mean absolute SHAP values (impact on the model's log-odds) for the gradient-boosting model on the main chronological test sample, after winsorising value-added labour productivity at the 1st and 99th percentiles of the training distribution. SHAP values are computed with TreeExplainer. They summarise the predictive contribution of each feature and are not causal effects.}
+\end{table}
